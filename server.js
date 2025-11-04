@@ -3,11 +3,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 import ideaRouter from "./routes/ideaRoutes.js";
 import { errroHandler } from "./middleware/errorHandler.js";
+import connectDB from "./config/db.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+
+//connect to MongoDB
+connectDB();
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
