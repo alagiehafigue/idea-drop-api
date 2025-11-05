@@ -1,21 +1,45 @@
 import express from "express";
+import Idea from "../models/Idea.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
 //@route     Get /api/ideas
 //@description Get all ideas
 //@access       Public
-router.get("/", (req, res) => {
-  const ideas = [
-    { id: 1, title: "idea 1", descrption: "This is idea 1" },
-    { id: 2, title: "idea 2", descrption: "This is idea 2" },
-    { id: 3, title: "idea 3", descrption: "This is idea 3" },
-  ];
+router.get("/", async (req, res) => {
+  try {
+    const ideas = await Idea.find();
 
-  res.status(400);
-  throw new Error("This is an error");
+    res.json(ideas);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+});
 
-  res.json(ideas);
+//@route     Get /api/ideas:id
+//@description Get a single idea
+//@access       Public
+router.get("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(404);
+      throw new Error("Idea Not Found");
+    }
+    const idea = await Idea.findById(req.params.id);
+    console.log(req.params.id);
+
+    if (!idea) {
+      res.status(404);
+      throw new Error("Idea Not Found");
+    }
+    res.json(idea);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
 });
 
 //@route     Post /api/ideas
