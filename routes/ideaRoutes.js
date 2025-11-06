@@ -28,8 +28,7 @@ router.get("/:id", async (req, res, next) => {
       res.status(404);
       throw new Error("Idea Not Found");
     }
-    const idea = await Idea.findById(req.params.id);
-    console.log(req.params.id);
+    const idea = await Idea.findById(id);
 
     if (!idea) {
       res.status(404);
@@ -70,6 +69,29 @@ router.post("/", async (req, res, next) => {
 
     const savedIdea = await newIdea.save();
     res.status(201).json(savedIdea);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+});
+
+//@route     Delete /api/ideas:id
+//@description Delete idea
+//@access       Public
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(404);
+      throw new Error("Idea Not Found");
+    }
+    const idea = await Idea.findByIdAndDelete(id);
+
+    if (!idea) {
+      res.status(404);
+      throw new Error("Idea Not Found");
+    }
+    res.json({ message: "Idea is deleted sucessfully" });
   } catch (err) {
     console.log(err);
     next(err);
