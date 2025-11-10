@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import ideaRouter from "./routes/ideaRoutes.js";
+import authRouter from "./routes/authRoutes.js";
 import { errroHandler } from "./middleware/errorHandler.js";
 import connectDB from "./config/db.js";
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/ideas", ideaRouter);
+app.use("/api/auth", authRouter);
 
 //404 Fall Back
 app.use((req, res, next) => {

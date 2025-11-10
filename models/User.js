@@ -4,20 +4,20 @@ import bcrypt, { genSalt } from "bcryptjs";
 const UserSchema = new mongoose.Schema(
   {
     name: {
-      typeof: String,
+      type: String,
       required: true,
       trim: true,
     },
 
     email: {
-      typeof: String,
+      type: String,
       required: true,
       unique: true,
       trim: true,
       lowercase: true,
     },
     password: {
-      typeof: String,
+      type: String,
       required: true,
       minlength: 6,
     },
