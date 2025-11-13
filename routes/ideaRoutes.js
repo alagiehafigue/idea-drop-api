@@ -1,6 +1,7 @@
 import express from "express";
 import Idea from "../models/Idea.js";
 import mongoose from "mongoose";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -52,9 +53,9 @@ router.get("/:id", async (req, res, next) => {
 //@route     Post /api/ideas
 //@description Post an idea
 //@access       Public
-router.post("/", async (req, res, next) => {
+router.post("/", protect, async (req, res, next) => {
   try {
-    const { title, summary, description, tags } = req.body;
+    const { title, summary, description, tags } = req.body || {};
 
     if (!title?.trim() || !summary?.trim() || !description?.trim()) {
       throw new Error("Title, summary and description is required");
@@ -86,7 +87,7 @@ router.post("/", async (req, res, next) => {
 //@route     Delete /api/ideas:id
 //@description Delete idea
 //@access       Public
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", protect, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -110,7 +111,7 @@ router.delete("/:id", async (req, res, next) => {
 //@description PUT idea
 //@access       Public
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", protect, async (req, res, next) => {
   try {
     const { id } = req.params;
 
