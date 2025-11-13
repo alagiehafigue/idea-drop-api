@@ -1,5 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
+import { jwtVerify } from "jose";
+import { JWT_SECRET } from "../utils/getJwtSecret.js";
 import User from "../models/User.js";
 import { generateToken } from "../utils/generateToken.js";
 
@@ -124,5 +126,42 @@ router.post("/logout", (req, res) => {
   });
 
   res.status(200).json({ message: "Logout out successfully" });
+});
+
+// @router        POST api/auth/refresh
+// @description   Create new access token from refresh token in cookie
+// @access        Public (Needs Valid refresh token in cookie)
+
+router.post("/refresh", async (req, res, next) => {
+  try {
+    const token = await req.cookies?.refreshToken;
+    console.log("refreshing to get a new token..");
+
+    if (!token) {
+      res.status(401);
+      throw new Error("No refresh token");
+    }
+
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const user = await User.findById(payload.userId);
+
+    if (!user) {
+      res.status(401);
+      throw new Error("No user");
+    }
+    const newAccessToken = await generateToken({ userId: user._id.toString() });
+
+    res.json({
+      accessToken: newAccessToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    res.status(401);
+    next(err);
+  }
 });
 export default router;
